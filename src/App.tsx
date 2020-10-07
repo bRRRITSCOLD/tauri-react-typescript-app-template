@@ -10,6 +10,9 @@ import {
 import * as tauriDialog from 'tauri/api/dialog'
 import * as tauriFs from 'tauri/api/fs'
 
+// components
+import { GridContainer, GridItem } from './components/UI/Grid';
+
 // css
 import './App.css';
 
@@ -37,21 +40,27 @@ function Index() {
   async function onClick() {
     const dir: any = await tauriDialog.open({ directory: true });
     const readDir: any[] = await tauriFs.readDir(dir, { recursive: true } as any);
+    console.log('read');
     setFiles([
-      ...files,
       ...readDir
     ] as any);
   }
   return (
     <div className="App">
-      <Button type="button" onClick={onClick}>Select Directory</Button>
-      {
-        files.length
-          ? <>
-              {JSON.stringify(files, null, 2)}
-            </>
-          : ''
-      }
+      <GridContainer direction="column">
+        <div>
+          <Button type="button" onClick={onClick}>Select Directory</Button>
+        </div>
+        {
+          files.length
+            ? files.map((file: any) => 
+              <GridItem>
+                {JSON.stringify(file, null, 2)}
+              </GridItem>
+            )
+            : ''
+        }
+      </GridContainer>
     </div>
   )
 }
