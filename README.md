@@ -4,4 +4,4 @@ In the project directory, you can run:
 
 ### `npm run dev`
 
-Runs React locat server + tauri dev environemnt (and program window)
+Runs React local server + tauri dev environment (and program window)
