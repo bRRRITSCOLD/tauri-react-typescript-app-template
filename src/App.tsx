@@ -1,5 +1,5 @@
 // node_modules
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar, Button, IconButton, Toolbar,
 } from '@material-ui/core';
@@ -8,6 +8,7 @@ import {
   Redirect, Switch, Route, Link,
 } from 'react-router-dom';
 import * as tauriDialog from 'tauri/api/dialog'
+import * as tauriFs from 'tauri/api/fs'
 
 // css
 import './App.css';
@@ -31,14 +32,26 @@ function Nav() {
 }
 
 function Index() {
-  async function onClick() {
-    const dirs = await tauriDialog.open({ directory: true });
-    console.log(dirs);
-  }
+  const [files, setFiles] = useState([]);
 
+  async function onClick() {
+    const dir: any = await tauriDialog.open({ directory: true });
+    const readDir: any[] = await tauriFs.readDir(dir, { recursive: true } as any);
+    setFiles([
+      ...files,
+      ...readDir
+    ] as any);
+  }
   return (
     <div className="App">
-      <Button type="button" onClick={onClick}></Button>
+      <Button type="button" onClick={onClick}>Select Directory</Button>
+      {
+        files.length
+          ? <>
+              {JSON.stringify(files, null, 2)}
+            </>
+          : ''
+      }
     </div>
   )
 }
