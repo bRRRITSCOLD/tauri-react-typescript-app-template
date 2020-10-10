@@ -1,21 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { StoreProvider } from 'easy-peasy';
 
 import './index.css';
 
 // app
 import App from './App';
 
+// stores
+import { createStore } from './stores';
+
 // import * as serviceWorker from './serviceWorker';
 
 
 ReactDOM.render(
-  <Router>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </Router>,
+  <StoreProvider store={createStore()}>
+    <Router>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </Router>
+  </StoreProvider>,
   document.getElementById('root')
 );
 

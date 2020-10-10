@@ -16,7 +16,7 @@ export function GridItem(props: {
   const gridItemStyles = useGridItemStyles();
   // render
   return (
-    <Grid item {...rest} className={gridItemStyles.grid}>
+    <Grid item {...rest}>
       {children}
     </Grid>
   );
