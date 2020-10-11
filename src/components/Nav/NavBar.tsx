@@ -15,8 +15,8 @@ export function NavBar() {
         <IconButton edge="start" color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>
-        <Button component={Link} to="/" color="inherit">
-          Index
+        <Button component={Link} to="/logs" color="inherit">
+          Logs
         </Button>
         <Button component={Link} to="/about" color="inherit">
           About

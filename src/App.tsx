@@ -1,7 +1,7 @@
 // node_modules
 import React, { lazy, Suspense } from 'react';
 import {
-  Switch, Route
+  Switch, Route, Redirect
 } from 'react-router-dom';
 
 // components
@@ -11,7 +11,8 @@ import { NavBar } from './components/Nav/NavBar';
 import './App.css';
 
 // pages
-const Index = lazy(() => import('./pages/Index/Index'));
+const Logs = lazy(() => import('./pages/Logs/Logs'));
+const LogsDetail = lazy(() => import('./pages/Logs/LogsDetail/LogsDetail'));
 const About = lazy(() => import('./pages/About/About'));
 
 function App() {
@@ -20,7 +21,17 @@ function App() {
       <NavBar/>
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
-          <Route exact path="/" component={Index} />
+          <Route
+            exact
+            path="/"
+            render={() => {
+                return (
+                  <Redirect to="/logs" /> 
+                )
+            }}
+          />
+          <Route exact path="/logs" component={Logs} />
+          <Route path="/logs/:id" component={LogsDetail} />
           <Route exact path="/about" component={About} />
         </Switch>
       </Suspense>

@@ -1,20 +1,21 @@
 // node_modules
 import React, { useState } from 'react';
 import { Button, Grid } from '@material-ui/core';
-import * as tauriDialog from 'tauri/api/dialog'
-import * as tauriFs from 'tauri/api/fs'
 
 // components
-import { GridContainer, GridItem } from '../../components/UI/Grid';
-import { Table } from '../../components/UI/Table/Table';
-import { useStoreActions, useStoreState } from '../../libs/hooks/store';
+import { GridContainer, GridItem } from '../../../components/UI/Grid';
+import { Table } from '../../../components/UI/Table/Table';
+import { useStoreActions, useStoreState } from '../../../libs/hooks/store';
+import { useParams } from 'react-router-dom';
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 170, align: 'center' },
-  { id: 'path', label: 'Path', minWidth: 170, align: 'center' }
+  { id: 'directory', label: 'Name', minWidth: 170, align: 'center' }
 ];
 
-export default function Index() {
+export default function LogsDetail() {
+  // router
+  const urlParams = useParams();
+  console.log(`urlParams=`, urlParams);
   // store states, actions, thunks
   // 1) logs store
   const logsStoreState = useStoreState((state) => state.logs);
@@ -31,7 +32,7 @@ export default function Index() {
           <Button type="button" onClick={onClick}>Add Log Directory</Button>
         </GridContainer>
         <div style={{ paddingTop: '10px' }}>
-          <Table columns={columns} rows={logsStoreState.session.logFiles}/>
+          <Table columns={columns} rows={logsStoreState.session.logAuditFiles}/>
         </div>
       </GridItem>
     </GridContainer>

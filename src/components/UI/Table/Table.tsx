@@ -35,17 +35,17 @@ export function Table(props: TablePropsInterface) {
   // deconstruct for ease
   const { columns, rows } = props;
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // const [page, setPage] = React.useState(0);
+  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (_event: any, newPage: any) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (_event: any, newPage: any) => {
+  //   setPage(newPage);
+  // };
 
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (event: any) => {
+  //   setRowsPerPage(+event.target.value);
+  //   setPage(0);
+  // };
 
   return (
     <Paper className={classes.root}>

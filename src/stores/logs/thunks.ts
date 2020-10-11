@@ -7,6 +7,7 @@ import {
 import { assign, get } from 'lodash';
 import * as tauriDialog from 'tauri/api/dialog';
 import * as tauriFs from 'tauri/api/fs';
+import { isUndefined } from 'util';
 import { v4 as uuid } from 'uuid';
 
 // libraries
@@ -26,35 +27,21 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
     addLogDirectory: thunk(async (actions) => {
       // ask user for log files directory
       const logDirectory = await tauriDialog.open({ directory: true });
-      console.log('logDirectory = ', logDirectory);
       // read the directory
       const logDirectoryFiles = await tauriFs.readDir(logDirectory as string, { recursive: true } as any);
-      console.log('logDirectoryFiles = ', logDirectoryFiles);
       // no filter/reduce down the results
-      const { logAuditFiles, logFiles } = logDirectoryFiles.reduce((files: { logAuditFiles: tauriFs.FileEntry[], logFiles: tauriFs.FileEntry[] }, file: tauriFs.FileEntry) => {
+      const logAuditFile = logDirectoryFiles.reduce((auditFile: any, file: tauriFs.FileEntry) => {
         if (get(get(file, 'name', '').split('.').slice(-1), '[0]', '').toUpperCase() === 'JSON') {
-          files.logAuditFiles.push(assign({}, file, { logDirectory }));
-        } else {
-          files.logFiles.push(assign({}, file, { logDirectory }));
+          auditFile = assign({}, file, { logDirectory });
         }
-        return files;
-      }, { logAuditFiles: [], logFiles: [] });
+        return auditFile;
+      }, undefined);
       // read the audit file
-      const readLogAuditFiles = await Promise.all(logAuditFiles.map(async (logAuditFile) => {
-        const readTextFile = await tauriFs.readTextFile(logAuditFile.path);
-        return JSON.parse(readTextFile);
-      }));
-      console.log('readLogAuditFiles = ', readLogAuditFiles);
+      const readLogAuditFile = await tauriFs.readTextFile(logAuditFile.path);
+      const parsedReadLogAuditFile = JSON.parse(readLogAuditFile);
+      console.log('readLogAuditFile=', readLogAuditFile)
       // set log audit files in store
-      actions.setLogAuditFiles(logAuditFiles.map((logAuditFile) => {
-        const foundReadLogAuditFile = readLogAuditFiles.find((readLogAuditFile) => readLogAuditFile.auditLog.includes(logAuditFile.name));
-        console.log('foundReadLogAuditFile = ', foundReadLogAuditFile);
-        return assign({}, logAuditFile, { data: foundReadLogAuditFile });
-      }));
-      console.log(logAuditFiles);
-      // set log files in store
-      actions.setLogFiles(logFiles);
-      console.log('logFiles = ', logFiles);
+      actions.replaceLogAuditFile(assign({}, parsedReadLogAuditFile, { path: logAuditFile.path, directory: logDirectory }));
     })
   };
 }
