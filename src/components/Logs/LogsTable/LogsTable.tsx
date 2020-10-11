@@ -108,7 +108,7 @@ export function LogsTable(props: LogsTablePropsInterface) {
                               column.id === 'directory'
                                 ? (
                                   <Button
-                                    onClick={() => { history.push(`/logs/${value}`); }}
+                                    onClick={() => { history.push(`/logs/${encodeURIComponent(value)}`); }}
                                     color="inherit"
                                   >
                                     {column.format && typeof value === 'number' ? column.format(value) : value}
