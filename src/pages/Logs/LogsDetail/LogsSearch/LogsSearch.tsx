@@ -1,6 +1,7 @@
 // node_modules
-import React from 'react';
+import React, { useEffect } from 'react';
 import { get } from 'lodash';
+import * as tauri from 'tauri/api/tauri'
 
 // libraries
 import { useStoreActions, useStoreState, useRouter } from '../../../../libs/hooks';
@@ -19,11 +20,19 @@ export default function LogsSearch() {
   const logsStoreState = useStoreState((state) => state.logs);
   const logsStoreActions = useStoreActions((state) => state.logs);
   // debugging
+  const logAuditFile = logsStoreState.logAuditFileById(get(params, 'path.id'))
   const logFiles = logsStoreState.logAuditFileLogFilesByHashes(
     get(params, 'path.id'),
     get(params, 'queryString.hashes', '').split(',')
   );
   console.log('logFiles=', logFiles);
+  // parse files on page load
+  useEffect(() => {
+    (async () => {
+      const result = await tauri.promisified({ cmd: 'readParseLogFiles', argument: `${logAuditFile?.directory}/${logFiles[0].name.split('/').slice(-1)[0]}.gz`});
+      console.log(`result=`, result);
+    })();
+  });
   // return explicitly to render
   return (
     <GridContainer alignItems="center" direction="column">
