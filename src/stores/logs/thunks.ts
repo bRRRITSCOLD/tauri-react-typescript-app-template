@@ -39,9 +39,9 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
       // read the audit file
       const readLogAuditFile = await tauriFs.readTextFile(logAuditFile.path);
       const parsedReadLogAuditFile = JSON.parse(readLogAuditFile);
-      console.log('readLogAuditFile=', readLogAuditFile)
+      console.log('parsedReadLogAuditFile=', parsedReadLogAuditFile)
       // set log audit files in store
-      actions.replaceLogAuditFile(assign({}, parsedReadLogAuditFile, { path: logAuditFile.path, directory: logDirectory }));
+      actions.replaceLogAuditFile(assign({}, parsedReadLogAuditFile, { path: logAuditFile.path, directory: logDirectory, id: uuid() }));
     })
   };
 }

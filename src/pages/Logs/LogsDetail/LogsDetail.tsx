@@ -1,13 +1,16 @@
 // node_modules
-import React, { useState } from 'react';
-import { Button, Grid } from '@material-ui/core';
+import React from 'react';
+import { get } from 'lodash';
+import { useParams } from 'react-router-dom';
+
+// libraries
+import { useStoreActions, useStoreState } from '../../../libs/hooks/store';
 
 // components
 import { GridContainer, GridItem } from '../../../components/UI/Grid';
-import { Table } from '../../../components/UI/Table/Table';
-import { useStoreActions, useStoreState } from '../../../libs/hooks/store';
-import { useParams } from 'react-router-dom';
 import { LogsDetailTable } from '../../../components/Logs/LogsDetailTable/LogsDetailTable';
+import { LogAuditFile } from '../../../models/logs/LogAuditFile';
+import { useRouter } from '../../../libs/hooks/router';
 
 const columns = [
   { id: 'directory', label: 'Name', minWidth: 170, align: 'center' }
@@ -15,21 +18,17 @@ const columns = [
 
 export default function LogsDetail() {
   // router
-  const urlParams = useParams();
-  console.log(`urlParams=`, urlParams);
+  const { params } = useRouter();
   // store states, actions, thunks
   // 1) logs store
   const logsStoreState = useStoreState((state) => state.logs);
-  const logsStoreActions = useStoreActions((state) => state.logs);
-  // handlers
-  async function onClick() {
-    await logsStoreActions.addLogDirectory();
-  }
-
+  // file/view constants
+  const logAuditFile = logsStoreState.logAuditFileById(get(params, 'path.id'));
+  // return explicitly to render
   return (
     <GridContainer alignItems="center" direction="column">
       <GridItem style={{ paddingTop: '10px' }} xs={11}>
-        <LogsDetailTable logAuditFile={{}} />
+        <LogsDetailTable logAuditFile={logAuditFile as LogAuditFile} />
       </GridItem>
     </GridContainer>
   )

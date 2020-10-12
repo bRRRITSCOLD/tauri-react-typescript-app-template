@@ -99,7 +99,7 @@ export function LogsTable(props: LogsTablePropsInterface) {
                 })} */}
                 {logAuditFiles.map((row: any) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       {columns.map((column: any) => {
                         const value: any = row[column.id];
                         return (
@@ -108,7 +108,7 @@ export function LogsTable(props: LogsTablePropsInterface) {
                               column.id === 'directory'
                                 ? (
                                   <Button
-                                    onClick={() => { history.push(`/logs/${encodeURIComponent(value)}`); }}
+                                    onClick={() => { history.push(`/logs/${row['id']}`); }}
                                     color="inherit"
                                   >
                                     {column.format && typeof value === 'number' ? column.format(value) : value}

@@ -13,6 +13,7 @@ import './App.css';
 // pages
 const Logs = lazy(() => import('./pages/Logs/Logs'));
 const LogsDetail = lazy(() => import('./pages/Logs/LogsDetail/LogsDetail'));
+const LogsSearch = lazy(() => import('./pages/Logs/LogsDetail/LogsSearch/LogsSearch'))
 const About = lazy(() => import('./pages/About/About'));
 
 function App() {
@@ -31,7 +32,8 @@ function App() {
             }}
           />
           <Route exact path="/logs" component={Logs} />
-          <Route path="/logs/:id" component={LogsDetail} />
+          <Route exact path="/logs/:id" component={LogsDetail} />
+          <Route exact path="/logs/:id/search" component={LogsSearch} />
           <Route exact path="/about" component={About} />
         </Switch>
       </Suspense>

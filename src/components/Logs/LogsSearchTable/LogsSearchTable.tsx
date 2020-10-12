@@ -11,7 +11,6 @@ import TableRow from '@material-ui/core/TableRow';
 import { Link, useHistory } from 'react-router-dom';
 import { GridContainer } from '../../UI/Grid';
 import { LogAuditFile } from '../../../models/logs/LogAuditFile';
-import { useRouter } from '../../../libs/hooks/router';
 
 const useStyles = makeStyles({
   root: {
@@ -23,12 +22,11 @@ const useStyles = makeStyles({
 });
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 170, align: 'center', format: (value: string) => value.split('/').slice(-1)[0] },
-  { id: 'hash', label: 'Hash', minWidth: 170, align: 'center' },
-  { id: 'date', label: 'Date', minWidth: 170, align: 'center', format: (value: any) => new Date(value).toISOString() }
+  { id: 'level', label: 'Level', minWidth: 170, align: 'center' },
+  { id: 'message', label: 'Message', minWidth: 170, align: 'center' }
 ];
 
-export interface LogsDetailTablePropsColumnInterface {
+export interface LogsSearchTablePropsColumnInterface {
   id: string,
   label: string,
   minWidth?: number,
@@ -36,17 +34,17 @@ export interface LogsDetailTablePropsColumnInterface {
   format?: (value: any) => any;
 }
 
-export interface LogsDetailTablePropsInterface {
+export interface LogsSearchTablePropsInterface {
   logAuditFile: LogAuditFile;
 }
 
-export function LogsDetailTable(props: LogsDetailTablePropsInterface) {
+export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
   // deconstruct for ease
   const { logAuditFile } = props;
   const classes = useStyles();
   // const [page, setPage] = React.useState(0);
   // const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { history } = useRouter();
+  const history = useHistory();
 
   // const handleChangePage = (_event: any, newPage: any) => {
   //   setPage(newPage);
@@ -74,7 +72,7 @@ export function LogsDetailTable(props: LogsDetailTablePropsInterface) {
             <MUITable stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column: LogsDetailTablePropsColumnInterface) => (
+                  {columns.map((column: LogsSearchTablePropsColumnInterface) => (
                     <TableCell
                       key={column.id}
                       align={column.align ? column.align as any : 'right'}
@@ -102,16 +100,16 @@ export function LogsDetailTable(props: LogsDetailTablePropsInterface) {
                 })} */}
                 {logAuditFile.files.map((row: any) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.hash}>
                       {columns.map((column: any) => {
                         const value: any = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {
-                              column.id === 'name'
+                              column.id === 'directory'
                                 ? (
                                   <Button
-                                    onClick={() => { history.push(`/logs/${logAuditFile.id}/search?hashes=${row['hash']}`); }}
+                                    onClick={() => { history.push(`/logs/${row['id']}`); }}
                                     color="inherit"
                                   >
                                     {column.format ? column.format(value) : value} 
