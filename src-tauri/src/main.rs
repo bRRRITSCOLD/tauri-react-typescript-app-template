@@ -3,7 +3,6 @@
   windows_subsystem = "windows"
 )]
 
-use std::io::BufReader;
 use std::fs::File;
 use flate2::read::GzDecoder;
 use std::io::Read;

@@ -7,8 +7,8 @@ import {
 import { assign, get } from 'lodash';
 import * as tauriDialog from 'tauri/api/dialog';
 import * as tauriFs from 'tauri/api/fs';
-import { isUndefined } from 'util';
 import { v4 as uuid } from 'uuid';
+import { LogAuditFileInterface, LogAuditFileLogFileInterface } from '../../models/logs/LogAuditFile';
 
 // libraries
 
@@ -36,12 +36,38 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
         }
         return auditFile;
       }, undefined);
+      console.log(`logAuditFile=`, logAuditFile);
       // read the audit file
       const readLogAuditFile = await tauriFs.readTextFile(logAuditFile.path);
-      const parsedReadLogAuditFile = JSON.parse(readLogAuditFile);
-      console.log('parsedReadLogAuditFile=', parsedReadLogAuditFile)
+      const parsedReadLogAuditFile: LogAuditFileInterface = JSON.parse(readLogAuditFile);
+      console.log('parsedReadLogAuditFile=', parsedReadLogAuditFile);
+      // now let us take the data from the readDir
+      // operation from above and merge it with the
+      // log files under each auditLogFile
       // set log audit files in store
-      actions.replaceLogAuditFile(assign({}, parsedReadLogAuditFile, { path: logAuditFile.path, directory: logDirectory, id: uuid() }));
+      actions.replaceLogAuditFile(assign(
+        {},
+        parsedReadLogAuditFile, 
+        {
+          path: logAuditFile.path,
+          directory: logDirectory,
+          id: uuid(),
+          files: parsedReadLogAuditFile.files.map((file: LogAuditFileLogFileInterface) => {
+            // first find the log audit file log file
+            // that correlates to each file returned
+            // from the above readDir call
+            const foundReadDirFile = logDirectoryFiles.find((logDirectoryFile) => logDirectoryFile.path.includes(file.name));
+            console.log('foundReadDirFile=', foundReadDirFile);
+            return assign(
+              {},
+              file,
+               {
+                 path: foundReadDirFile?.path
+               }
+            )
+          })
+        }
+      ));
     })
   };
 }

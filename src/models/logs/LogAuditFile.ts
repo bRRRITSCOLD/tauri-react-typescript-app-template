@@ -6,6 +6,7 @@ export interface LogAuditFileLogFileInterface {
   date: number;
   name: string;
   hash: string;
+  path?: string;
 }
 
 export interface LogAuditFileInterface {

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { get } from 'lodash';
 import * as tauri from 'tauri/api/tauri'
+import * as tauriFs from 'tauri/api/fs';
 
 // libraries
 import { useStoreActions, useStoreState, useRouter } from '../../../../libs/hooks';
@@ -29,8 +30,31 @@ export default function LogsSearch() {
   // parse files on page load
   useEffect(() => {
     (async () => {
-      const result = await tauri.promisified({ cmd: 'readParseLogFiles', argument: `${logAuditFile?.directory}/${logFiles[0].name.split('/').slice(-1)[0]}.gz`});
-      console.log(`result=`, result);
+      await Promise.all([
+        get(params, 'queryString.hashes', '').split(',').map(async (hash: string) => {
+          // first find the log file
+          const foundLogFile = logFiles.find((logFile) => logFile.hash === hash);
+          // only act if file is found
+          if (foundLogFile) {
+            // depending on if the file is gzipped or not
+            // then act accordingly
+            let readLogFile;
+            if (foundLogFile?.name.includes('.gz')) {
+              console.log(`gzip-file=`, foundLogFile?.name);
+              readLogFile = await tauri.promisified({
+                cmd: 'readParseLogFiles',
+                argument: foundLogFile?.path
+              });
+            } else {
+              console.log(`non-gzip-file=`, foundLogFile);
+              console.log('non-gzip-file-directory=', `${logAuditFile?.directory}/${get(foundLogFile, 'name', '').split('/').slice(-1)[0]}`)
+              readLogFile = await tauriFs.readTextFile(foundLogFile?.path as string);
+            }
+            console.log(`readLogFile=`, readLogFile);
+          }
+          console.log('log file not found');
+        })
+      ]);
     })();
   });
   // return explicitly to render
