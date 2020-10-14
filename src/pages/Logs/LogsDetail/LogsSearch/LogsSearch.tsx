@@ -38,21 +38,32 @@ export default function LogsSearch() {
           if (foundLogFile) {
             // depending on if the file is gzipped or not
             // then act accordingly
-            let readLogFile;
+            let readLogFile: string;
             if (foundLogFile?.name.includes('.gz')) {
               console.log(`gzip-file=`, foundLogFile?.name);
               readLogFile = await tauri.promisified({
                 cmd: 'readParseLogFiles',
                 argument: foundLogFile?.path
               });
+              const splitReadLogFile = readLogFile
+                .split('\n')
+                .filter((item: string) => item.length > 0)
+                .map((item: string) => JSON.parse(item));
+              console.log('splitReadLogFile=', splitReadLogFile);
             } else {
               console.log(`non-gzip-file=`, foundLogFile);
               console.log('non-gzip-file-directory=', `${logAuditFile?.directory}/${get(foundLogFile, 'name', '').split('/').slice(-1)[0]}`)
               readLogFile = await tauriFs.readTextFile(foundLogFile?.path as string);
+              const splitReadLogFile = readLogFile
+                .split('\n')
+                .filter((item: string) => item.length > 0)
+                .map((item: string) => JSON.parse(item));
+              console.log('splitReadLogFile=', splitReadLogFile);
             }
             console.log(`readLogFile=`, readLogFile);
+          } else {
+            console.log('log file not found');
           }
-          console.log('log file not found');
         })
       ]);
     })();
