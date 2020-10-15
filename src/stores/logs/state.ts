@@ -45,7 +45,7 @@ export function createLogsStoreState(): LogsStoreStateInterface {
         // hash is found in the
         // passed in hash array then include
         // it in the returned array
-        const foundLogAuditFileLogFile = foundLogAuditFile?.files.find((file) => file.hash === hash);
+        const foundLogAuditFileLogFile = foundLogAuditFile?.logFiles.find((logFile) => logFile.hash === hash);
         if (foundLogAuditFileLogFile) {
           foundLogAuditFls.push(foundLogAuditFileLogFile);
         }

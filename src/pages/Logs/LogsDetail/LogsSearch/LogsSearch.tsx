@@ -1,6 +1,6 @@
 // node_modules
 import React, { useEffect } from 'react';
-import { get } from 'lodash';
+import { assign, findIndex, get } from 'lodash';
 import * as tauri from 'tauri/api/tauri'
 import * as tauriFs from 'tauri/api/fs';
 
@@ -39,8 +39,8 @@ export default function LogsSearch() {
             // depending on if the file is gzipped or not
             // then act accordingly
             let readLogFile: string;
-            if (foundLogFile?.name.includes('.gz')) {
-              console.log(`gzip-file=`, foundLogFile?.name);
+            if (foundLogFile.path?.includes('.gz')) {
+              console.log(`gzip-file=`, foundLogFile?.path);
               readLogFile = await tauri.promisified({
                 cmd: 'readParseLogFiles',
                 argument: foundLogFile?.path
@@ -49,15 +49,25 @@ export default function LogsSearch() {
                 .split('\n')
                 .filter((item: string) => item.length > 0)
                 .map((item: string) => JSON.parse(item));
+              // find the file and replace it in the current log audit file
+              const foundLogAduitFileLogFileIndex = findIndex(logAuditFile?.logFiles, { hash });
+              if (logAuditFile) logAuditFile.logFiles[foundLogAduitFileLogFileIndex] = assign({}, foundLogFile, { data: splitReadLogFile });
+              logsStoreActions.replaceLogAuditFile(logAuditFile);
               console.log('splitReadLogFile=', splitReadLogFile);
             } else {
-              console.log(`non-gzip-file=`, foundLogFile);
-              console.log('non-gzip-file-directory=', `${logAuditFile?.directory}/${get(foundLogFile, 'name', '').split('/').slice(-1)[0]}`)
+              // console.log(`non-gzip-file=`, foundLogFile);
+              // console.log('non-gzip-file-directory=', `${logAuditFile?.directory}/${get(foundLogFile, 'name', '').split('/').slice(-1)[0]}`)
               readLogFile = await tauriFs.readTextFile(foundLogFile?.path as string);
               const splitReadLogFile = readLogFile
                 .split('\n')
                 .filter((item: string) => item.length > 0)
-                .map((item: string) => JSON.parse(item));
+                .map((item: string) => JSON.parse(item))
+                .map((logFileItem: any) => {
+                  return logFileItem
+                });
+              const foundLogAduitFileLogFileIndex = findIndex(logAuditFile?.logFiles, { hash });
+              if (logAuditFile) logAuditFile.logFiles[foundLogAduitFileLogFileIndex] = assign({}, foundLogFile, { data: splitReadLogFile });
+              logsStoreActions.replaceLogAuditFile(logAuditFile);
               console.log('splitReadLogFile=', splitReadLogFile);
             }
             console.log(`readLogFile=`, readLogFile);

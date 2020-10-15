@@ -52,7 +52,7 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
           path: logAuditFile.path,
           directory: logDirectory,
           id: uuid(),
-          files: parsedReadLogAuditFile.files.map((file: LogAuditFileLogFileInterface) => {
+          files: parsedReadLogAuditFile.logFiles.map((file: LogAuditFileLogFileInterface) => {
             // first find the log audit file log file
             // that correlates to each file returned
             // from the above readDir call

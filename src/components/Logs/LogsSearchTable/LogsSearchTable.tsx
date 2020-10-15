@@ -98,26 +98,14 @@ export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
                     </TableRow>
                   );
                 })} */}
-                {logAuditFile.files.map((row: any) => {
+                {logAuditFile.logFiles.map((row: any) => {
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.hash}>
                       {columns.map((column: any) => {
                         const value: any = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {
-                              column.id === 'directory'
-                                ? (
-                                  <Button
-                                    onClick={() => { history.push(`/logs/${row['id']}`); }}
-                                    color="inherit"
-                                  >
-                                    {column.format ? column.format(value) : value} 
-                                  </Button>
-                                )
-                                : column.format ? column.format(value) : value
-                            }
-
+                            {column.format ? column.format(value) : value}
                           </TableCell>
                         );
                       })}
