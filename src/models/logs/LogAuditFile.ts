@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { AnyObject } from "../common";
 
 export interface LogAuditFileLogFileInterface {
+  id?: string;
   date: number;
   name: string;
   hash: string;
@@ -15,6 +16,7 @@ export interface LogAuditFileLogFileInterface {
 }
 
 export class LogAuditFileLogFile implements LogAuditFileLogFileInterface {
+  public id?: string;
   public date!: number;
   public name!: string;
   public hash!: string;
@@ -26,6 +28,7 @@ export class LogAuditFileLogFile implements LogAuditFileLogFileInterface {
 
   public constructor(logAuditFileLogFile: Partial<LogAuditFileLogFileInterface>) {
     assign(this, logAuditFileLogFile, {
+      id: get(logAuditFileLogFile, 'id', uuid()),
       date: get(logAuditFileLogFile, 'date'),
       name: get(logAuditFileLogFile, 'name'),
       hash: get(logAuditFileLogFile, 'hash'),

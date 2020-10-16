@@ -10,7 +10,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { Link, useHistory } from 'react-router-dom';
 import { GridContainer } from '../../UI/Grid';
-import { LogAuditFile } from '../../../models/logs/LogAuditFile';
+import { LogAuditFile, LogAuditFileLogFile } from '../../../models/logs/LogAuditFile';
+import { Column, Table } from 'react-virtualized';
 
 const useStyles = makeStyles({
   root: {
@@ -22,6 +23,8 @@ const useStyles = makeStyles({
 });
 
 const columns = [
+  { id: 'date', label: 'Date', minWidth: 170, align: 'center' },
+  { id: 'hash', label: 'Hash', minWidth: 170, align: 'center' },
   { id: 'level', label: 'Level', minWidth: 170, align: 'center' },
   { id: 'message', label: 'Message', minWidth: 170, align: 'center' }
 ];
@@ -35,12 +38,13 @@ export interface LogsSearchTablePropsColumnInterface {
 }
 
 export interface LogsSearchTablePropsInterface {
-  logAuditFile: LogAuditFile;
+  logEntries: { hash: string; date: number; level: string; message: string }[];
 }
 
 export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
   // deconstruct for ease
-  const { logAuditFile } = props;
+  const { logEntries } = props;
+  console.log('logEntries=', logEntries)
   const classes = useStyles();
   // const [page, setPage] = React.useState(0);
   // const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -67,8 +71,21 @@ export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
         <Button type="button" onClick={onAddLogDirectoryClick}>Add Log Directory</Button>
       </GridContainer> */}
       <div style={{ paddingTop: '10px' }}>
-        <Paper className={classes.root}>
-          <TableContainer className={classes.container}>
+        <Table
+          width={300}
+          height={300}
+          headerHeight={20}
+          rowHeight={30}
+          headerRowRenderer={(args) => (
+            args.columns.map((column) => JSON.stringify(column))
+          )}
+          rowCount={logEntries.length}
+          rowGetter={({index}) => logEntries[index]}>
+          <Column label="level" dataKey="Level" width={100} />
+          <Column width={200} label="Message" dataKey="message" />
+        </Table>
+        {/* <Paper className={classes.root}> */}
+          {/* <TableContainer className={classes.container}>
             <MUITable stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -98,13 +115,13 @@ export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
                     </TableRow>
                   );
                 })} */}
-                {logAuditFile.logFiles.map((row: any) => {
+                {/* {logEntries.map((row: any) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.hash}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       {columns.map((column: any) => {
                         const value: any = row[column.id];
                         return (
-                          <TableCell key={column.id} align={column.align}>
+                          <TableCell key={row.id} align={column.align}>
                             {column.format ? column.format(value) : value}
                           </TableCell>
                         );
@@ -113,8 +130,8 @@ export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
                   );
                 })}
               </TableBody>
-            </MUITable>
-          </TableContainer>
+            </MUITable> */}
+          {/* </TableContainer> */}
           {/* <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
@@ -124,7 +141,7 @@ export function LogsSearchTable(props: LogsSearchTablePropsInterface) {
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           /> */}
-        </Paper>
+        {/* </Paper> */}
       </div>
     </>
   );
