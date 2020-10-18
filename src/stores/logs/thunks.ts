@@ -39,7 +39,7 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
       console.log(`logAuditFile=`, logAuditFile);
       // read the audit file
       const readLogAuditFile = await tauriFs.readTextFile(logAuditFile.path);
-      const parsedReadLogAuditFile: LogAuditFileInterface = JSON.parse(readLogAuditFile);
+      const parsedReadLogAuditFile: any = JSON.parse(readLogAuditFile);
       console.log('parsedReadLogAuditFile=', parsedReadLogAuditFile);
       // now let us take the data from the readDir
       // operation from above and merge it with the
@@ -52,7 +52,7 @@ export function createLogsStoreThunks(): LogsStoreThunksInterface {
           path: logAuditFile.path,
           directory: logDirectory,
           id: uuid(),
-          files: parsedReadLogAuditFile.logFiles.map((file: LogAuditFileLogFileInterface) => {
+          logFiles: parsedReadLogAuditFile.files.map((file: LogAuditFileLogFileInterface) => {
             // first find the log audit file log file
             // that correlates to each file returned
             // from the above readDir call

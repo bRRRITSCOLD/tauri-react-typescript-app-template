@@ -1,17 +1,25 @@
 // node_modules
 import React, { useEffect } from 'react';
-import { assign, findIndex, get } from 'lodash';
+import { assign, findIndex, flatten, get } from 'lodash';
 import * as tauri from 'tauri/api/tauri'
 import * as tauriFs from 'tauri/api/fs';
+import { v4 as uuid } from 'uuid';
 
 // libraries
 import { useStoreActions, useStoreState, useRouter } from '../../../../libs/hooks';
 
 // components
 import { GridContainer, GridItem } from '../../../../components/UI/Grid';
-import { LogsSearchTable } from '../../../../components/Logs/LogsSearchTable/LogsSearchTable';
+import { LogsSearchTable } from '../../../../components/Logs/LogsSearchTable/LogsSearchTable.old';
 import { LogAuditFile } from '../../../../models/logs/LogAuditFile';
+import { AutoSizer } from 'react-virtualized';
+import { FixedSizeList as List } from 'react-window';
 
+const Row = ({ index, style }: any) => (
+  <div className={index % 2 ? "ListItemOdd" : "ListItemEven"} style={style}>
+    Row {index}
+  </div>
+);
 export default function LogsSearch() {
   // router
   const { params } = useRouter();
@@ -27,6 +35,8 @@ export default function LogsSearch() {
     get(params, 'queryString.hashes', '').split(',')
   );
   console.log('logFiles=', logFiles);
+  const lol = flatten(logFiles.map((logFile) => logFile.data?.map((item) => assign({}, item, { date: logFile.date, hash: logFile.hash, id: uuid() })))).filter((item: any) => item !== undefined) as any;
+  console.log('lol=', lol)
   // parse files on page load
   useEffect(() => {
     (async () => {
@@ -38,52 +48,48 @@ export default function LogsSearch() {
           if (foundLogFile) {
             // depending on if the file is gzipped or not
             // then act accordingly
-            let readLogFile: string;
+            let splitReadLogFile: any[];
+            // depending on if the item is gzipped
+            // or not then act accordingly
             if (foundLogFile.path?.includes('.gz')) {
-              console.log(`gzip-file=`, foundLogFile?.path);
-              readLogFile = await tauri.promisified({
+              console.log('gzipped file');
+              const readLogFile: string = await tauri.promisified({
                 cmd: 'readParseLogFiles',
                 argument: foundLogFile?.path
               });
-              const splitReadLogFile = readLogFile
+              splitReadLogFile = readLogFile
                 .split('\n')
                 .filter((item: string) => item.length > 0)
                 .map((item: string) => JSON.parse(item));
-              // find the file and replace it in the current log audit file
-              const foundLogAduitFileLogFileIndex = findIndex(logAuditFile?.logFiles, { hash });
-              if (logAuditFile) logAuditFile.logFiles[foundLogAduitFileLogFileIndex] = assign({}, foundLogFile, { data: splitReadLogFile });
-              logsStoreActions.replaceLogAuditFile(logAuditFile);
-              console.log('splitReadLogFile=', splitReadLogFile);
             } else {
-              // console.log(`non-gzip-file=`, foundLogFile);
-              // console.log('non-gzip-file-directory=', `${logAuditFile?.directory}/${get(foundLogFile, 'name', '').split('/').slice(-1)[0]}`)
-              readLogFile = await tauriFs.readTextFile(foundLogFile?.path as string);
-              const splitReadLogFile = readLogFile
+              console.log('non-gzipped file');
+              const readLogFile = await tauriFs.readTextFile(foundLogFile?.path as string);
+              splitReadLogFile = readLogFile
                 .split('\n')
                 .filter((item: string) => item.length > 0)
                 .map((item: string) => JSON.parse(item))
                 .map((logFileItem: any) => {
                   return logFileItem
                 });
-              const foundLogAduitFileLogFileIndex = findIndex(logAuditFile?.logFiles, { hash });
-              if (logAuditFile) logAuditFile.logFiles[foundLogAduitFileLogFileIndex] = assign({}, foundLogFile, { data: splitReadLogFile });
-              logsStoreActions.replaceLogAuditFile(logAuditFile);
-              console.log('splitReadLogFile=', splitReadLogFile);
             }
-            console.log(`readLogFile=`, readLogFile);
+            console.log('splitReadLogFile=', splitReadLogFile);
+            // find the file and replace it in the current log audit file
+            logAuditFile?.replaceLogFile({ hash }, assign({}, foundLogFile, { data: splitReadLogFile }));
+            // update the stored logAuditFile
+            logsStoreActions.replaceLogAuditFile(logAuditFile);
           } else {
             console.log('log file not found');
           }
         })
       ]);
     })();
-  });
+  }, []);
   // return explicitly to render
   return (
     <GridContainer alignItems="center" direction="column">
-      <GridItem style={{ paddingTop: '10px' }} xs={11}>
+      <GridItem style={{ paddingTop: '10px', height: '100px', width: '100%' }} xs={11}>
         Logs Search
-        <LogsSearchTable logAuditFile={logsStoreState.logAuditFileById(get(params, 'path.id')) as LogAuditFile} />
+        <LogsSearchTable logEntries={lol} />
       </GridItem>
     </GridContainer>
   )
