@@ -10,7 +10,7 @@ import { useStoreActions, useStoreState, useRouter } from '../../../../libs/hook
 
 // components
 import { GridContainer, GridItem } from '../../../../components/UI/Grid';
-import { LogsSearchTable } from '../../../../components/Logs/LogsSearchTable/LogsSearchTable.old';
+import { LogsSearchTable } from '../../../../components/Logs/LogsSearchTable/LogsSearchTable';
 import { LogAuditFile } from '../../../../models/logs/LogAuditFile';
 import { AutoSizer } from 'react-virtualized';
 import { FixedSizeList as List } from 'react-window';

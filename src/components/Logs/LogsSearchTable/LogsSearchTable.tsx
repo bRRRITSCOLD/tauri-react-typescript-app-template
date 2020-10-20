@@ -1,117 +1,254 @@
-import * as React from "react";
-// import { useStyletron, withStyle } from "baseui";
-// import {
-//   StyledTable,
-//   StyledHead,
-//   StyledHeadCell,
-//   StyledRow,
-//   StyledCell
-// } from "baseui/table";
-// import { Checkbox } from "baseui/checkbox";
+// import React, { useState, useEffect, useRef } from 'react';
+// import ReactDOM from 'react-dom';
+// import 'antd/dist/antd.css';
+// import './index.css';
+// import { VariableSizeGrid as Grid } from 'react-window';
+// import ResizeObserver from 'rc-resize-observer';
+// import classNames from 'classnames';
+// import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+// // import { Table } from 'antd';
 
-import {
-  List,
-  AutoSizer,
-  CellMeasurer,
-  CellMeasurerCache
-} from "react-virtualized";
-import { Table, TableHead, TableCell, TableRow, Checkbox, withStyles, TableBody } from "@material-ui/core";
+// // These item sizes are arbitrary.
+// // Yours should be based on the content of the item.
+// const columnWidths = new Array(1000)
+//   .fill(true)
+//   .map(() => 75 + Math.round(Math.random() * 50));
+// const rowHeights = new Array(1000)
+//   .fill(true)
+//   .map(() => 25 + Math.round(Math.random() * 50));
+ 
+// const Cell = ({ columnIndex, rowIndex, style }) => (
+//   <div style={style}>
+//     Item {rowIndex},{columnIndex}
+//   </div>
+// );
+ 
+// export function VirtualTable(props: any) {
+//   const { columns, scroll } = props;
+//   const [tableWidth, setTableWidth] = useState(0);
+//   const widthColumnCount = columns.filter(({ width }: any) => !width).length;
+//   const mergedColumns = columns.map((column: any) => {
+//     if (column.width) {
+//       return column;
+//     }
 
-const rows = [
-  [
-    "eastern_north_carolina_652_x",
-    652,
-    "100 Broadway st. New York City, New York"
-  ],
-  ["modesto_229_x", 229, "100 Market st. San Francisco, California"]
-];
+//     return { ...column, width: Math.floor(tableWidth / widthColumnCount) };
+//   });
+//   const gridRef = useRef();
+//   const [connectObject] = useState(() => {
+//     const obj = {};
+//     Object.defineProperty(obj, 'scrollLeft', {
+//       get: () => null,
+//       set: (scrollLeft) => {
+//         if (gridRef.current) {
+//           (gridRef as any).current.scrollTo({
+//             scrollLeft,
+//           });
+//         }
+//       },
+//     });
+//     return obj;
+//   });
 
-const headers = ["id", "city_id", "city_slug"];
+//   const resetVirtualGrid = () => {
+//     (gridRef as any).current.resetAfterIndices({
+//       columnIndex: 0,
+//       shouldForceUpdate: false,
+//     });
+//   };
 
-const WIDTH = 1500;
+//   useEffect(() => resetVirtualGrid, [tableWidth]);
 
-const cache = new CellMeasurerCache({
-  defaultHeight: 36,
-  // fixedHeight: true
-});
+//   const renderVirtualList = (rawData: any, { scrollbarSize, ref, onScroll }: any) => {
+//     ref.current = connectObject;
+//     const totalHeight = rawData.length * 54;
+//     return (
+//       <Grid
+//         ref={gridRef as any}
+//         className="virtual-grid"
+//         columnCount={mergedColumns.length}
+//         columnWidth={(index) => {
+//           const { width } = mergedColumns[index];
+//           return totalHeight > scroll.y && index === mergedColumns.length - 1
+//             ? width - scrollbarSize - 1
+//             : width;
+//         }}
+//         height={scroll.y}
+//         rowCount={rawData.length}
+//         rowHeight={() => 54}
+//         width={tableWidth}
+//         onScroll={({ scrollLeft }) => {
+//           onScroll({
+//             scrollLeft,
+//           });
+//         }}
+//       >
+//         {({ columnIndex, rowIndex, style }) => (
+//           <div
+//             className={classNames('virtual-table-cell', {
+//               'virtual-table-cell-last': columnIndex === mergedColumns.length - 1,
+//             })}
+//             style={style}
+//           >
+//             {rawData[rowIndex][mergedColumns[columnIndex].dataIndex]}
+//           </div>
+//         )}
+//       </Grid>
+//     );
+//   };
 
-// const IDHeader = withStyles(StyledHeadCell, { width: "20px" });
-// const IDCell = withStyles(StyledCell, { maxWidth: "20px" });
+//   return (
+//     <ResizeObserver
+//       onResize={({ width }: any) => {
+//         setTableWidth(width);
+//       }}
+//     >
+//       <TableContainer>
+//         <Table
+//           {...props}
+//         >
+//           {/* <TableHead>
+//             <TableRow>
+//               {columns.map((column: any) => (
+//                 <TableCell
+//                   key={column.id}
+//                   align={column.align ? column.align as any : 'right'}
+//                   style={{ minWidth: column.minWidth ? column.minWidth : 100 }}
+//                 >
+//                   {column.label}
+//                 </TableCell>
+//               ))}
+//             </TableRow>
+//           </TableHead> */}
 
+//           <TableBody>
+//             <Grid
+//               ref={gridRef as any}
+//               className="virtual-grid"
+//               columnCount={mergedColumns.length}
+//               columnWidth={(index) => {
+//                 const { width } = mergedColumns[index];
+//                 return totalHeight > scroll.y && index === mergedColumns.length - 1
+//                   ? width - scrollbarSize - 1
+//                   : width;
+//               }}
+//               height={scroll.y}
+//               rowCount={rawData.length}
+//               rowHeight={() => 54}
+//               width={tableWidth}
+//               onScroll={({ scrollLeft }) => {
+//                 onScroll({
+//                   scrollLeft,
+//                 });
+//               }}
+//             >
+//               {({ columnIndex, rowIndex, style }) => (
+//                 <div
+//                   className={classNames('virtual-table-cell', {
+//                     'virtual-table-cell-last': columnIndex === mergedColumns.length - 1,
+//                   })}
+//                   style={style}
+//                 >
+//                   {rawData[rowIndex][mergedColumns[columnIndex].dataIndex]}
+//                 </div>
+//               )}
+//             </Grid>
+//           </TableBody>
+//         </Table>
+//       </TableContainer>
+//     </ResizeObserver>
+//   );
+// } // Usage
+
+// const columns = [
+//   {
+//     title: 'A',
+//     dataIndex: 'key',
+//     width: 150,
+//   },
+//   {
+//     title: 'B',
+//     dataIndex: 'key',
+//   },
+//   {
+//     title: 'C',
+//     dataIndex: 'key',
+//   },
+//   {
+//     title: 'D',
+//     dataIndex: 'key',
+//   },
+//   {
+//     title: 'E',
+//     dataIndex: 'key',
+//     width: 200,
+//   },
+//   {
+//     title: 'F',
+//     dataIndex: 'key',
+//     width: 100,
+//   },
+// ];
+// const data = Array.from(
+//   {
+//     length: 100000,
+//   },
+//   (_, key) => ({
+//     key,
+//   }),
+// );
+// // ReactDOM.render(
+// //   <VirtualTable
+// //     columns={columns}
+// //     dataSource={data}
+// //     scroll={{
+// //       y: 300,
+// //       x: '100vw',
+// //     }}
+// //   />,
+// //   document.getElementById('container'),
+// // );
+// node_modules
+import React, { useState, useEffect, useRef } from 'react';
+import { VariableSizeGrid as Grid } from 'react-window';
+import ResizeObserver from 'rc-resize-observer';
+
+// These item sizes are arbitrary.
+// Yours should be based on the content of the item.
+const columnWidths = new Array(1000)
+  .fill(true)
+  .map(() => 75 + Math.round(Math.random() * 50));
+const rowHeights = new Array(1000)
+  .fill(true)
+  .map(() => 25 + Math.round(Math.random() * 50));
+ 
+const Cell = ({ columnIndex, rowIndex, style }: any) => (
+  <div style={style}>
+    Item {rowIndex},{columnIndex}
+  </div>
+);
+ 
 export function LogsSearchTable(props: any) {
-  // const [css] = useStyletron();
+  const [tableWidth, setTableWidth] = useState(0);
   return (
-    <div style={{ height: "100%", overflowX: 'auto' }}>
-      <Table
-      style={{ height: '100%'}}
-        // role="grid"
-        // aria-colcount={headers.length + 1}
-        // aria-rowcount={rows.length}
+    <div style={{ width: '100%' }}>
+    <ResizeObserver
+      onResize={({ width }: any) => {
+        console.log('resize')
+        setTableWidth(width);
+      }}
+    >
+      <Grid
+        columnCount={1000}
+        columnWidth={index => columnWidths[index]}
+        height={150}
+        rowCount={1000}
+        rowHeight={index => rowHeights[index]}
+        width={tableWidth}
       >
-        <TableHead style={{ width: `${WIDTH}px` }}>
-          <div role="columnheader" style={{ width: "40px" }} key={"header_checkbox"}>
-            <Checkbox
-              id="header_checkbox"
-              // checked={!!rows.length && checked.length === rows.length}
-              // onChange={({ target: { checked } }) =>
-              //   onSelect(null, checked, true)
-              // }
-            />
-          </div>
-          {headers.map(header => (
-            <TableCell role="columnheader" key={header}>
-              {header}
-            </TableCell>
-          ))}
-        </TableHead>
-
-        <TableBody style={{ height: "100%", width: '100%' }}>
-          <AutoSizer>
-            {({ height, width }) => (
-              <List
-                height={1000}
-                width={WIDTH}
-                rowCount={rows.length}
-                rowHeight={cache.rowHeight}
-                deferredMeasurementCache={cache}
-                rowRenderer={({ index, key, parent, style }) => {
-                  console.log('row render')
-                  return (
-                    <CellMeasurer
-                      cache={cache}
-                      columnIndex={0}
-                      key={key}
-                      parent={parent}
-                      rowIndex={index}
-                    >
-                      <TableRow role="row" key={key} style={style}>
-                        <TableCell
-                          role="gridcell"
-                          style={{ width: "40px" }}
-                          key={"header_checkbox"}
-                        >
-                          <Checkbox
-                          // id={`item_${index}_checkbox`}
-                          // checked={checked.includes(index)}
-                          // onChange={({ target: { checked } }) =>
-                          //   onSelect(index, checked)
-                          // }
-                          />
-                        </TableCell>
-                        {headers.map((header, i) => (
-                          <TableCell role="gridcell" key={header}>
-                            {rows[index][i]}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </CellMeasurer>
-                  )
-                }}
-              />
-            )}
-          </AutoSizer>
-        </TableBody>
-      </Table>
+        {Cell}
+      </Grid>
+    </ResizeObserver>
     </div>
   );
-};
+}
